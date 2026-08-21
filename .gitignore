@@ -1,0 +1,6 @@
+/data/
+/urbanrelay
+*.db
+*.db-shm
+*.db-wal
+
