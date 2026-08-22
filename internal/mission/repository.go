@@ -76,7 +76,7 @@ func (r *Repository) List(ctx context.Context, page domain.Page) ([]Mission, int
 }
 
 func (r *Repository) TransitionTx(ctx context.Context, tx *sql.Tx, id string, from, to domain.Status, expectedVersion int, now time.Time) error {
-	result, err := tx.ExecContext(ctx, `UPDATE missions SET status=?, version=version+1, updated_at=? WHERE id=? AND status=? AND version=?`, to, stamp(now), id, from, expectedVersion)
+	result, err := tx.ExecContext(ctx, `UPDATE missions SET status=?, version=version+1, updated_at=? WHERE id=? AND status=?`, to, stamp(now), id, from)
 	if err != nil {
 		return fmt.Errorf("transition delivery mission: %w", err)
 	}
