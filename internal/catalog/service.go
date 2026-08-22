@@ -59,7 +59,7 @@ func (s *Service) CreateAsset(ctx context.Context, req CreateAssetRequest) (*Ass
 	if err != nil {
 		return nil, err
 	}
-	if hub.Status != "active" {
+	if !annotationHubAccepts(hub.Status) {
 		return nil, apperr.New(apperr.CodeConflict, "asset cannot be assigned to an inactive hub")
 	}
 	now := s.clock.Now()
