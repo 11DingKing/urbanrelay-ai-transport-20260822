@@ -37,7 +37,8 @@ func (s *Service) Create(ctx context.Context, req CreateRequest) (*Mission, erro
 		return nil, apperr.Wrap(apperr.CodeInvalid, "invalid delivery mission", err)
 	}
 	digest := requestDigest(req)
-	if prior, found, err := s.idempotency.Lookup(ctx, "mission.create", req.IdempotencyKey, digest, now); err != nil {
+	lookupDigest := ""
+	if prior, found, err := s.idempotency.Lookup(ctx, "mission.create", req.IdempotencyKey, lookupDigest, now); err != nil {
 		return nil, err
 	} else if found {
 		var value Mission
