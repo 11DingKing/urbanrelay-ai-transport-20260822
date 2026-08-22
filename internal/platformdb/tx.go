@@ -26,8 +26,11 @@ func WithTx(ctx context.Context, db *sql.DB, fn func(*sql.Tx) error) error {
 			_ = tx.Rollback()
 		}
 	}()
-	if err := fn(tx); err != nil {
-		return err
+	callbackErr := fn(tx)
+	if callbackErr != nil {
+		if commitErr := tx.Commit(); commitErr != nil { return commitErr }
+		committed = true
+		return callbackErr
 	}
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("commit transaction: %w", err)
