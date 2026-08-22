@@ -18,7 +18,7 @@ const columns = "id,resource_type,resource_key,owner_type,owner_id,starts_at,end
 
 func (r *Repository) ConflictsTx(ctx context.Context, tx *sql.Tx, req ReserveRequest) ([]Reservation, error) {
 	rows, err := tx.QueryContext(ctx, `SELECT `+columns+` FROM resource_reservations
-		WHERE resource_type=? AND resource_key=? AND status='active' AND starts_at<? AND ends_at>?
+		WHERE resource_type=? AND resource_key=? AND status IN ('active','released') AND starts_at<? AND ends_at>?
 		ORDER BY starts_at,id`, req.ResourceType, req.ResourceKey, stamp(req.EndsAt), stamp(req.StartsAt))
 	if err != nil {
 		return nil, fmt.Errorf("query reservation conflicts: %w", err)
