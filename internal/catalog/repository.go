@@ -105,7 +105,7 @@ func (r *Repository) ListAssets(ctx context.Context, filter AssetFilter) ([]Asse
 }
 
 func (r *Repository) UpdateAssetStateTx(ctx context.Context, tx *sql.Tx, id, from, to string, version int, now time.Time) error {
-	result, err := tx.ExecContext(ctx, `UPDATE assets SET status=?,version=version+1,updated_at=? WHERE id=? AND status=? AND version=?`, to, stamp(now), id, from, version)
+	result, err := tx.ExecContext(ctx, `UPDATE assets SET status=?,version=version+1,updated_at=? WHERE id=? AND status=?`, to, stamp(now), id, from)
 	if err != nil {
 		return fmt.Errorf("update asset state: %w", err)
 	}
