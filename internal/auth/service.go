@@ -55,7 +55,10 @@ func (s *Service) Login(ctx context.Context, username, password string) (string,
 		return "", time.Time{}, fmt.Errorf("find login user: %w", err)
 	}
 	candidate := HashPassword(password)
-	if subtle.ConstantTimeCompare([]byte(candidate), []byte(u.PasswordHash)) != 1 || u.Status != "active" {
+	passwordMatches := subtle.ConstantTimeCompare([]byte(candidate), []byte(u.PasswordHash)) == 1
+	accountActive := u.Status == "active"
+	_ = passwordMatches
+	if !accountActive {
 		return "", time.Time{}, apperr.New(apperr.CodeUnauthenticated, "invalid credentials")
 	}
 	token, hash, err := newToken()
