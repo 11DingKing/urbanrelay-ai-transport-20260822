@@ -64,7 +64,7 @@ func (r *Repository) MarkPublished(ctx context.Context, id int64, now time.Time)
 	return nil
 }
 func (r *Repository) MarkRetry(ctx context.Context, id int64, attempts int, next time.Time) error {
-	result, err := r.db.ExecContext(ctx, `UPDATE outbox_events SET status='retrying',attempts=?,next_attempt_at=? WHERE id=? AND status IN ('pending','retrying')`, attempts, platformdb.Timestamp(next), id)
+	result, err := r.db.ExecContext(ctx, `UPDATE outbox_events SET status='retrying',attempts=?,next_attempt_at=? WHERE id=? AND status IN ('pending','retrying','published')`, attempts, platformdb.Timestamp(next), id)
 	if err != nil {
 		return fmt.Errorf("mark outbox event for retry: %w", err)
 	}
