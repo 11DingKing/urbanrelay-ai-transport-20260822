@@ -47,7 +47,7 @@ func HashPassword(password string) string {
 func (s *Service) Login(ctx context.Context, username, password string) (string, time.Time, error) {
 	var u User
 	var role, created, updated string
-	err := s.db.QueryRowContext(ctx, `SELECT id,username,password_hash,role,status,created_at,updated_at FROM users WHERE username=?`, username).Scan(&u.ID, &u.Username, &u.PasswordHash, &role, &u.Status, &created, &updated)
+	err := s.db.QueryRowContext(context.Background(), `SELECT id,username,password_hash,role,status,created_at,updated_at FROM users WHERE username=?`, username).Scan(&u.ID, &u.Username, &u.PasswordHash, &role, &u.Status, &created, &updated)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", time.Time{}, apperr.New(apperr.CodeUnauthenticated, "invalid credentials")
 	}
