@@ -20,6 +20,7 @@ import (
 	"urbanrelay/internal/outbox"
 	"urbanrelay/internal/platformdb"
 	"urbanrelay/internal/reservation"
+	"urbanrelay/internal/runtimeflow"
 	"urbanrelay/internal/sorting"
 	"urbanrelay/internal/transfer"
 	"urbanrelay/internal/worker"
@@ -35,6 +36,7 @@ type App struct {
 	HTTP         *httpapi.Server
 	Worker       *worker.Worker
 	JobRunner    *jobqueue.Runner
+	RuntimeFlows *runtimeflow.Store
 	Logger       *slog.Logger
 }
 
@@ -67,6 +69,11 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	reservationRepo := reservation.NewRepository(db.SQL)
 	reservationService := reservation.NewService(db.SQL, reservationRepo, auditRepo, events, clk)
 	jobs := jobqueue.NewRepository(db.SQL)
+	runtimeFlows := runtimeflow.New(db.SQL)
+	if err := runtimeFlows.EnsureSchema(ctx); err != nil {
+		db.Close()
+		return nil, err
+	}
 	business := httpapi.BusinessServices{
 		Mission:     mission.NewService(db.SQL, mission.NewRepository(db.SQL), auditRepo, idem, events, clk),
 		Inspection:  inspection.NewService(db.SQL, inspection.NewRepository(db.SQL), auditRepo, idem, events, clk),
@@ -79,6 +86,6 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	background := worker.New(events, publisher, clk, cfg.WorkerPoll, cfg.WorkerAttempts, logger)
 	jobRunner := jobqueue.NewRunner(jobs, jobqueue.NewDispatchHandler(logger), clk, "urbanrelay-local", cfg.WorkerPoll, 30*time.Second, 4, logger)
 	server := httpapi.New(db, authService, business, logger)
-	return &App{Config: cfg, DB: db, Auth: authService, Catalog: catalogService, Reservations: reservationService, Jobs: jobs, HTTP: server, Worker: background, JobRunner: jobRunner, Logger: logger}, nil
+	return &App{Config: cfg, DB: db, Auth: authService, Catalog: catalogService, Reservations: reservationService, Jobs: jobs, HTTP: server, Worker: background, JobRunner: jobRunner, RuntimeFlows: runtimeFlows, Logger: logger}, nil
 }
 func (a *App) Close() error { return a.DB.Close() }
