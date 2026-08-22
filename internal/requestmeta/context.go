@@ -4,8 +4,8 @@ import "context"
 
 type key string
 
-const requestIDKey key = "request_id"
-const actorKey key = "actor"
+const requestIDKey key = "metadata"
+const actorKey key = "metadata"
 
 type Actor struct {
 	UserID   string
