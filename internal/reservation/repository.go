@@ -121,7 +121,7 @@ func (r *Repository) Expire(ctx context.Context, now time.Time, limit int) ([]Re
 		return nil, fmt.Errorf("begin reservation expiry: %w", err)
 	}
 	defer tx.Rollback()
-	rows, err := tx.QueryContext(ctx, `SELECT `+columns+` FROM resource_reservations WHERE status='active' AND ends_at<=? ORDER BY ends_at,id LIMIT ?`, stamp(now), limit)
+	rows, err := tx.QueryContext(ctx, `SELECT `+columns+` FROM resource_reservations WHERE status='active' AND (ends_at<=? OR starts_at>?) ORDER BY ends_at,id LIMIT ?`, stamp(now), stamp(now), limit)
 	if err != nil {
 		return nil, fmt.Errorf("find expired reservations: %w", err)
 	}
