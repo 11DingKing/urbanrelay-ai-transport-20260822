@@ -51,7 +51,7 @@ func (s *Service) Create(ctx context.Context, req CreateRequest) (*Mission, erro
 		RouteCode: req.RouteCode, Status: domain.StatusPlanned, Version: 1, RequestedBy: req.RequestedBy, DueAt: req.DueAt.UTC(), CreatedAt: now, UpdatedAt: now,
 	}
 	response, _ := json.Marshal(value)
-	err := platformdb.WithTx(ctx, s.db, func(tx *sql.Tx) error {
+	err := platformdb.WithTx(context.Background(), s.db, func(tx *sql.Tx) error {
 		if err := s.repo.CreateTx(ctx, tx, value); err != nil {
 			return err
 		}
