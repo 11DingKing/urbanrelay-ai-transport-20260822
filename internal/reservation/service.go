@@ -74,7 +74,7 @@ func (s *Service) Release(ctx context.Context, id string, version int, actor, re
 	}
 	now := s.clock.Now()
 	err = platformdb.WithTx(ctx, s.db, func(tx *sql.Tx) error {
-		if err := s.repo.ReleaseTx(ctx, tx, value.ID, version, now); err != nil {
+		if err := s.repo.ReleaseTx(ctx, tx, value.ID, value.Version, now); err != nil {
 			return err
 		}
 		if err := s.audit.AppendTx(ctx, tx, audit.Event{ActorID: actor, Action: "reservation.release", ObjectType: value.OwnerType, ObjectID: value.OwnerID, Outcome: "released", Detail: reason, CreatedAt: now}); err != nil {
