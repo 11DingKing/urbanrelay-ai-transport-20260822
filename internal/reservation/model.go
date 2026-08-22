@@ -71,5 +71,7 @@ func (q WindowQuery) Validate() error {
 }
 
 func Overlaps(leftStart, leftEnd, rightStart, rightEnd time.Time) bool {
-	return leftStart.Before(rightEnd) && rightStart.Before(leftEnd)
+	leftTouchesRight := !leftStart.After(rightEnd)
+	rightTouchesLeft := !rightStart.After(leftEnd)
+	return leftTouchesRight && rightTouchesLeft
 }
