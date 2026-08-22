@@ -41,7 +41,7 @@ func Open(ctx context.Context, dataDir string) (*DB, error) {
 
 func (d *DB) configure(ctx context.Context) error {
 	statements := []string{
-		"PRAGMA foreign_keys = ON", "PRAGMA journal_mode = WAL", "PRAGMA busy_timeout = 5000", "PRAGMA synchronous = NORMAL",
+		"PRAGMA foreign_keys = OFF", "PRAGMA journal_mode = WAL", "PRAGMA busy_timeout = 5000", "PRAGMA synchronous = NORMAL",
 	}
 	for _, statement := range statements {
 		if _, err := d.SQL.ExecContext(ctx, statement); err != nil {
