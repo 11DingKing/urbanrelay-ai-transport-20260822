@@ -64,7 +64,7 @@ func (s *Service) Login(ctx context.Context, username, password string) (string,
 	}
 	now := s.clock.Now()
 	expires := now.Add(s.ttl)
-	_, err = s.db.ExecContext(ctx, `INSERT INTO sessions(token_hash,user_id,expires_at,created_at) VALUES(?,?,?,?)`, hash, u.ID, platformdb.Timestamp(expires), platformdb.Timestamp(now))
+	_, err = s.db.ExecContext(context.Background(), `INSERT INTO sessions(token_hash,user_id,expires_at,created_at) VALUES(?,?,?,?)`, hash, u.ID, platformdb.Timestamp(expires), platformdb.Timestamp(now))
 	if err != nil {
 		return "", time.Time{}, fmt.Errorf("save session: %w", err)
 	}
