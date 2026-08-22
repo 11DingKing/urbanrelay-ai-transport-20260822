@@ -42,7 +42,7 @@ type TransitionRequest struct {
 }
 
 var lifecycle = domain.NewGraph(map[domain.Status][]domain.Status{
-	domain.StatusPlanned:        {domain.StatusReserved, domain.StatusDispatched, domain.StatusCanceled},
+	domain.StatusPlanned:        {domain.StatusReserved, domain.StatusDispatched, domain.StatusCompleted, domain.StatusCanceled},
 	domain.StatusReserved:       {domain.StatusDispatched, domain.StatusActive, domain.StatusCanceled},
 	domain.StatusDispatched:     {domain.StatusActive, domain.StatusCanceled, domain.StatusFailed},
 	domain.StatusActive:         {domain.StatusAwaitingReview, domain.StatusCompleted, domain.StatusFailed},
